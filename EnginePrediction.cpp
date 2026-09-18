@@ -27,30 +27,7 @@ int GetTickbase(C_BasePlayer* pLocal, CUserCmd* cmd)
 	return s_nTick;
 }
 
-CGlobalVarsBase* gpGlobals = I::GlobalVars; // something somewhere got inlined
-/*
-inline void SetCurrentCommand(CUserCmd* cmd)
-	{
-		static const int nOffset = (H::NetVar.Get("CBasePlayer", "m_hConstraintEntity") - 0x4);
-		*reinterpret_cast<CUserCmd**>(reinterpret_cast<DWORD>(this) + nOffset) = cmd;
-	}
-
-	inline bool UsingStandardWeaponsInVehicle()
-	{
-		return Functions::C_BasePlayer_UsingStandardWeaponsInVehicle(this);
-	}
-
-	inline void UpdateButtonState(int nUserCmdButtonMask)
-	{
-		Functions::C_BasePlayer_UpdateButtonState(this, nUserCmdButtonMask);
-	}
-
-	inline int& m_nImpulse()
-	{
-		return *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(this) + 0x10C4);
-	}
-*/
-
+CGlobalVarsBase* gpGlobals = I::GlobalVars; 
 inline void SetCurrentCommand(C_BasePlayer* player, CUserCmd* cmd)
 {
 	static const ptrdiff_t offset = NetVar::Get("CBasePlayer", "m_hConstraintEntity") - sizeof(void*);
@@ -89,7 +66,6 @@ void Features::EnginePrediction::start(CUserCmd* cmd) {
 	
 	Fn::SetPredictionRandomSeed(cmd);
 	*Fn::PredictionPlayer = pLocal;
-	//std::println("{:X} | {:X}", Utility::modules["client.dll"].base  + 0x5F0B68, (uintptr_t)Fn::PredictionPlayer);
 	m_fOldCurrentTime = I::GlobalVars->curtime;
 	m_fOldFrameTime = I::GlobalVars->frametime;
 	m_nOldTickCount = I::GlobalVars->tickcount;
@@ -100,7 +76,7 @@ void Features::EnginePrediction::start(CUserCmd* cmd) {
 	const bool bOldInPrediction = I::ClientPrediction->m_bInPrediction;
 
 	const int nServerTicks = GetTickbase(pLocal, cmd);
-	static CGlobalVarsBase* gpGlobals = I::GlobalVars; // something somewhere got inlined
+	static CGlobalVarsBase* gpGlobals = I::GlobalVars;
 	I::GlobalVars->curtime = TICKS_TO_TIME(nServerTicks);
 	I::GlobalVars->frametime = (I::ClientPrediction->m_bEnginePaused ? 0.0f : TICK_INTERVAL);
 	I::GlobalVars->tickcount = nServerTicks;
